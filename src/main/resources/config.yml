@@ -1,0 +1,472 @@
+# ====================================================================================================
+# DasJobs Plugin-Konfiguration
+# Diese Datei ermöglicht es dir, verschiedene Aspekte des DasJobs-Plugins anzupassen,
+# einschließlich Chat-Präfixe, Zusammenfassungsintervalle und detaillierte Job-Konfigurationen.
+# ====================================================================================================
+
+
+# Präfix: Dies ist der Präfix für alle Nachrichten, die vom Plugin im Chat gesendet werden.
+# DU können Minecraft-Farbcodes verwenden (z. B. &c für Rot, &l für Fett).
+prefix: "&c&lDasJobs &8>> "
+
+# Minuten-für-Zusammenfassung: Diese Einstellung bestimmt, wie oft der Fortschritt (XP und Geld)
+# zusammengefasst und dem Spieler im Chat gesendet wird.
+# Auf 0 setzen, um Zusammenfassungsnachrichten vollständig zu deaktivieren.
+minutes-for-summary: 1
+
+# ====================================================================================================
+# Job-Konfiguration
+# Unten kannst du einzelne Jobs definieren und anpassen. Jeder Job hat eigene
+# Fortschrittseinstellungen (XP-Formel, maximales Level) und spezifische Belohnungen für Aktionen.
+# ====================================================================================================
+jobs:
+  # --------------------------------------------------------------------------------
+  # Miner-Job-Konfiguration
+  # Dieser Job konzentriert sich darauf, verschiedene Blockarten zu zerstören, hauptsächlich Erze und Stein.
+  # --------------------------------------------------------------------------------
+  Miner:
+    # level-xp-max: Das ist das Level, bei dem die XP-Anforderung für das nächste Job-Level
+    # nicht mehr weiter steigt. Alle folgenden Level (level-xp-max + 1, level-xp-max + 2 usw.)
+    # brauchen dann die gleiche Menge an XP wie für das Erreichen von „level-xp-max“.
+    # Es gibt kein theoretisches Maximallevel für Jobs.
+    level-xp-max: 40
+
+    # ============================================================================
+    # XP-Formel-Konfiguration:
+    # Die XP, die benötigt werden, um das nächste Level zu erreichen (Level X+1 von X),
+    # werden wie folgt berechnet:
+    # ErforderlicheXP = level-xp-koeffizient-a * (AktuellesLevel^2) + level-xp-konstante-b
+    # Beispiel: Wenn das aktuelle Level 1 ist, benötigte XP = A * (1^2) + B
+    # ============================================================================
+    level-xp-coefficient-a: 2000 # Der 'A'-Wert in der XP-Formel (A * x^2 + B) (Multiplikationsfaktor)
+    level-xp-constant-b: 500    # Der 'B'-Wert in der XP-Formel (A * x^2 + B) (Startpunkt)
+
+    # level-money-increase: Der Geldbetrag, der pro Level hinzugefügt wird.
+    # Der gesamte Geldbonus wird berechnet als: level-money-increase * (AktuellesLevel - 1)
+    # Zum Beispiel: Wenn 0.3, dann ist der Geldbonus auf Level 2 = 0.3; auf Level 3 = 0.6 usw.
+    # Dieser Geldbonus steigt auch über „level-xp-max“ hinaus weiter an.
+    level-money-increase: 0.3
+
+    # deaktivierte-Welten: Eine Liste von Welt-Namen, in denen dieser Job
+    # kein Geld oder Erfahrung bringt. Spieler, die in diesen Welten Aktionen ausführen,
+    # erhalten keine Jobbelohnungen.
+    disabled-world:
+      - world # Beispiel: 'world_nether', 'world_the_end'
+
+    # Belohnungen: Definiere, welche Items/Blöcke/Entitäten XP und Geld für diesen Job bringen.
+    # Struktur: <ActionType>.<Material/Entity_Name>.<reward_type>
+    # Beispiele für ActionType: BREAK oder KILL (muss mit dem JobAction-Enum übereinstimmen)
+    # Material/Entity_Name: Verwende die internen Minecraft-Namen (z. B. 'STONE', 'ZOMBIE').
+    # Für Pflanzen mit Wachstumsstufen oft 'MATERIAL-DATENWERT' (z. B. 'WHEAT-7').
+    rewards:
+      Break: # Aktionen im Zusammenhang mit dem Zerstören von Blöcken
+        andesite:
+          income: 1.0 # Verdientes Geld
+          experience: 1.0 # Verdientes XP
+        stone:
+          income: 1.0
+          experience: 1.0
+        deepslate:
+          income: 1.0
+          experience: 1.0
+        granite:
+          income: 1.0
+          experience: 1.0
+        diorite:
+          income: 1.0
+          experience: 1.0
+        sandstone:
+          income: 1.0
+          experience: 1.0
+        chiseled_sandstone:
+          income: 1.0
+          experience: 1.0
+        cut_sandstone:
+          income: 1.0
+          experience: 1.0
+        coal_ore:
+          income: 1.0
+          experience: 5.0
+        deepslate_coal_ore:
+          income: 1.0
+          experience: 10.0
+        redstone_ore:
+          income: 1.0
+          experience: 10.0
+        deepslate_redstone_ore:
+          income: 1.0
+          experience: 20.0
+        copper_ore:
+          income: 1.0
+          experience: 5.0
+        deepslate_copper_ore:
+          income: 1.0
+          experience: 10.0
+        iron_ore:
+          income: 1.0
+          experience: 8.0
+        deepslate_iron_ore:
+          income: 1.0
+          experience: 16.0
+        gold_ore:
+          income: 1.0
+          experience: 15.0
+        deepslate_gold_ore:
+          income: 1.0
+          experience: 30.0
+        lapis_ore:
+          income: 1.0
+          experience: 15.0
+        deepslate_lapis_ore:
+          income: 1.0
+          experience: 30.0
+        diamond_ore:
+          income: 1.0
+          experience: 30.0
+        deepslate_diamond_ore:
+          income: 1.0
+          experience: 60.0
+        emerald_ore:
+          income: 1.0
+          experience: 150.0
+        nether_quartz_ore:
+          income: 1.0
+          experience: 5.0
+        obsidian:
+          income: 1.0
+          experience: 30.0
+        tuff:
+          income: 1.0
+          experience: 1.0
+        spawner:
+          income: 1.0
+          experience: 1000.0
+
+  # --------------------------------------------------------------------------------
+  # Holzfäller-Job-Konfiguration
+  # Dieser Job konzentriert sich auf das Zerstören verschiedener Arten von Holzblöcken.
+  # --------------------------------------------------------------------------------
+  Holzfaeller:
+    level-xp-max: 40
+    level-xp-coefficient-a: 1800
+    level-xp-constant-b: 350
+    level-money-increase: 0.8
+    disabled-world:
+      - world
+    rewards:
+      Break:
+        oak_log:
+          income: 1.0
+          experience: 5.0
+        spruce_log:
+          income: 1.0
+          experience: 5.0
+        birch_log:
+          income: 1.0
+          experience: 5.0
+        jungle_log:
+          income: 1.0
+          experience: 5.0
+        acacia_log:
+          income: 1.0
+          experience: 5.0
+        dark_oak_log:
+          income: 1.0
+          experience: 5.0
+        stripped_oak_log:
+          income: 1.0
+          experience: 3.0
+        stripped_spruce_log:
+          income: 1.0
+          experience: 3.0
+        stripped_birch_log:
+          income: 1.0
+          experience: 3.0
+        stripped_jungle_log:
+          income: 1.0
+          experience: 3.0
+        stripped_acacia_log:
+          income: 1.0
+          experience: 3.0
+        stripped_dark_oak_log:
+          income: 1.0
+          experience: 3.0
+        stripped_pale_oak_log:
+          income: 1.0
+          experience: 3.0
+        stripped_cherry_log:
+          income: 1.0
+          experience: 3.0
+        stripped_crimson_stem:
+          income: 1.0
+          experience: 3.0
+        stripped_warped_stem:
+          income: 1.0
+          experience: 3.0
+        stripped_mangrove_log:
+          income: 1.0
+          experience: 3.0
+        pale_oak_log:
+          income: 1.0
+          experience: 5.0
+        cherry_log:
+          income: 1.0
+          experience: 5.0
+        crimson_stem:
+          income: 1.0
+          experience: 7.0
+        warped_stem:
+          income: 1.0
+          experience: 7.0
+        mangrove_log:
+          income: 1.0
+          experience: 5.0
+
+  # --------------------------------------------------------------------------------
+  # Jäger-Job-Konfiguration
+  # Dieser Job konzentriert sich auf das Töten verschiedener Arten von Entitäten.
+  # --------------------------------------------------------------------------------
+  Jaeger:
+    level-xp-max: 40
+    level-xp-coefficient-a: 1000
+    level-xp-constant-b: 300
+    level-money-increase: 0.5
+    disabled-world:
+      - world
+    rewards:
+      Kill: # Aktionen im Zusammenhang mit dem Töten von Entitäten
+        Player:
+          income: 50.0
+          experience: 10.0
+        Creeper:
+          income: 5.0
+          experience: 3.0
+        Zombie:
+          income: 5.0
+          experience: 3.0
+        Skeleton:
+          income: 5.0
+          experience: 3.0
+        Spider:
+          income: 5.0
+          experience: 3.0
+        Witch:
+          income: 5.0
+          experience: 3.0
+        zombified_piglin:
+          income: 5.0
+          experience: 3.0
+        Wither_skeleton:
+          income: 5.0
+          experience: 3.0
+        Warden:
+          income: 200.0
+          experience: 20.0
+        Vindicator:
+          income: 8.0
+          experience: 4.0
+        Vex:
+          income: 5.0
+          experience: 3.0
+        Stray:
+          income: 5.0
+          experience: 3.0
+        Slime:
+          income: 5.0
+          experience: 3.0
+        Silverfish:
+          income: 5.0
+          experience: 3.0
+        Shulker:
+          income: 8.0
+          experience: 5.0
+        Ravager:
+          income: 50.0
+          experience: 10.0
+        Pillager:
+          income: 8.0
+          experience: 5.0
+        Piglin_brute:
+          income: 8.0
+          experience: 5.0
+        Piglin:
+          income: 8.0
+          experience: 5.0
+        Hoglin:
+          income: 8.0
+          experience: 5.0
+        Blaze:
+          income: 8.0
+          experience: 5.0
+        Ghast:
+          income: 10.0
+          experience: 6.0
+        Magma_cube:
+          income: 5.0
+          experience: 3.0
+        Iron_golem:
+          income: 20.0
+          experience: 8.0
+        Guardian:
+          income: 10.0
+          experience: 6.0
+        Evoker:
+          income: 30.0
+          experience: 15.0
+        Enderman:
+          income: 4.0
+          experience: 3.0
+        Endermite:
+          income: 5.0
+          experience: 3.0
+        Cave_spider:
+          income: 6.0
+          experience: 4.0
+        breeze:
+          income: 30.0
+          experience: 15.0
+        bogged:
+          income: 30.0
+          experience: 15.0
+
+  # --------------------------------------------------------------------------------
+  # Gräber-Job-Konfiguration
+  # Dieser Job konzentriert sich auf das Zerstören verschiedener Arten von Erde-, Sand- und anderen Bodenblöcken.
+  # --------------------------------------------------------------------------------
+  Graeber:
+    level-xp-max: 40
+    level-xp-coefficient-a: 2000
+    level-xp-constant-b: 500
+    level-money-increase: 0.3
+    disabled-world:
+      - world
+    rewards:
+      Break:
+        red_sand:
+          income: 1.0
+          experience: 1.0
+        coarse_dirt:
+          income: 1.0
+          experience: 1.0
+        dirt:
+          income: 1.0
+          experience: 0.5
+        grass_block:
+          income: 1.0
+          experience: 3.0
+        gravel:
+          income: 1.0
+          experience: 1.0
+        sand:
+          income: 1.0
+          experience: 1.0
+        clay:
+          income: 1.0
+          experience: 1.0
+        mud:
+          income: 1.0
+          experience: 1.0
+        moss_block:
+          income: 1.0
+          experience: 1.0
+        snow_block:
+          income: 1.0
+          experience: 0.5
+
+  # --------------------------------------------------------------------------------
+  # Farmer-Job-Konfiguration
+  # Dieser Job konzentriert sich auf das Zerstören verschiedener Arten von Pflanzen, Feldfrüchten und anderen farmbezogenen Blöcken.
+  # --------------------------------------------------------------------------------
+  Farmer:
+    level-xp-max: 40
+    level-xp-coefficient-a: 1600
+    level-xp-constant-b: 250
+    level-money-increase: 0.8
+    disabled-world:
+      - world
+    rewards:
+      Break:
+        chorus_plant:
+          income: 1.0
+          experience: 3.0
+        chorus_flower:
+          income: 1.0
+          experience: 3.0
+        beetroots-3: # Hinweis: Für Früchte verwende 'MATERIAL-DATENWERT' für vollständig ausgewachsene Zustände, falls nötig
+          income: 1.0
+          experience: 3.0
+        wheat-7:
+          income: 1.0
+          experience: 3.0
+        carrots-7:
+          income: 1.0
+          experience: 1.0
+        potatoes-7:
+          income: 1.0
+          experience: 1.0
+        pumpkin:
+          income: 1.0
+          experience: 1.0
+        melon:
+          income: 1.0
+          experience: 1.0
+        sugar_cane:
+          income: 1.0
+          experience: 2.0
+        cocoa-2:
+          income: 1.0
+          experience: 4.0
+        lily_pad:
+          income: 1.0
+          experience: 2.0
+        dandelion:
+          income: 1.0
+          experience: 2.0
+        poppy:
+          income: 1.0
+          experience: 2.0
+        blue_orchid:
+          income: 1.0
+          experience: 2.0
+        allium:
+          income: 1.0
+          experience: 2.0
+        azure_bluet:
+          income: 1.0
+          experience: 2.0
+        red_tulip:
+          income: 1.0
+          experience: 2.0
+        orange_tulip:
+          income: 1.0
+          experience: 2.0
+        white_tulip:
+          income: 1.0
+          experience: 2.0
+        pink_tulip:
+          income: 1.0
+          experience: 2.0
+        oxeye_daisy:
+          income: 1.0
+          experience: 2.0
+        brown_mushroom:
+          income: 1.0
+          experience: 1.0
+        red_mushroom:
+          income: 1.0
+          experience: 1.0
+        vine:
+          income: 1.0
+          experience: 1.0
+        cactus:
+          income: 1.0
+          experience: 1.0
+        nether_wart:
+          income: 1.0
+          experience: 1.0
+        bamboo:
+          income: 1.0
+          experience: 0.5
+        hay_block:
+          income: 1.0
+          experience: 1.0

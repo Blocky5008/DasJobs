@@ -1,0 +1,21 @@
+name: DasJobs
+version: 1.0
+main: de.Blocky.dasjobs.DasJobs
+api-version: 1.21
+author: Blocky
+description: Spieler können mit Jobs Geld verdienen und Level aufsteigen.
+depend: [Vault, Essentials]
+
+commands:
+  jobs:
+    description: Zeigt Job-Informationen an.
+    usage: /jobs <subcommand>
+    aliases: [job]
+    permission: dasjobs.command.jobs
+permissions:
+  dasjobs.command.jobs:
+    description: Erlaubt die Nutzung des /jobs Befehls.
+    default: true
+  dasjobs.admin:
+    description: Admin-Berechtigungen für DasJobs.
+    default: op
