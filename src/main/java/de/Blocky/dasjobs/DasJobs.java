@@ -20,6 +20,7 @@ import de.Blocky.dasjobs.util.ChatUtil;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -44,10 +45,12 @@ public final class DasJobs extends JavaPlugin {
     private BoosterManager boosterManager;
     private RewardManager rewardManager;
     private RewardMenuListener rewardMenuListener;
-    private JobMenuListener jobMenuListener; // Declared here
+    private JobMenuListener jobMenuListener;
+    private BlockBreakListener blockBreakListener;
     private BukkitTask leaderboardUpdateTask;
 
     private String prefix;
+    private String currencySymbol;
     private int minutesForSummary;
 
     private Map<UUID, Double> temporaryEarnedMoney = new HashMap<>();
@@ -97,6 +100,9 @@ public final class DasJobs extends JavaPlugin {
         if (rewardManager != null) {
             rewardManager.saveRewards();
         }
+        if (blockBreakListener != null) {
+            blockBreakListener.stopCounterResetTask();
+        }
 
         if (summaryTask != null) {
             summaryTask.cancel();
@@ -110,7 +116,6 @@ public final class DasJobs extends JavaPlugin {
     }
 
     private void setupManagers() {
-        // Initialize all managers first
         jobConfigManager = new JobConfigManager(this);
         playerDataManager = new PlayerDataManager(this);
         messageManager = new MessageManager(this);
@@ -120,12 +125,13 @@ public final class DasJobs extends JavaPlugin {
         jobManager = new JobManager(this);
         rewardMenuListener = new RewardMenuListener(this);
         jobMenuListener = new JobMenuListener(this);
+        blockBreakListener = new BlockBreakListener(this);
 
         setupConfig();
     }
 
     private void registerListeners() {
-        getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
+        getServer().getPluginManager().registerEvents(blockBreakListener, this);
         getServer().getPluginManager().registerEvents(new BlockPlaceListener(this), this);
         getServer().getPluginManager().registerEvents(new EntityKillListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerJoinQuitListener(this), this);
@@ -153,10 +159,19 @@ public final class DasJobs extends JavaPlugin {
         if (rewardManager != null) {
             rewardManager.saveRewards();
         }
+
+        if (blockBreakListener != null) {
+            HandlerList.unregisterAll(blockBreakListener);
+            blockBreakListener.stopCounterResetTask();
+            blockBreakListener = new BlockBreakListener(this);
+            getServer().getPluginManager().registerEvents(blockBreakListener, this);
+        }
+
         reloadConfig();
         getLogger().info(ChatUtil.colorize("&a[DasJobs] config.yml neu geladen."));
 
         this.prefix = ChatUtil.colorize(getConfig().getString("prefix", "&c&lDasJobs &8>> "));
+        this.currencySymbol = getConfig().getString("currency-symbol", "$");
         this.minutesForSummary = getConfig().getInt("minutes-for-summary", 1);
         if (summaryTask != null) {
             summaryTask.cancel();
@@ -196,6 +211,7 @@ public final class DasJobs extends JavaPlugin {
         }
 
         this.prefix = ChatUtil.colorize(getConfig().getString("prefix", "&c&lDasJobs &8>> "));
+        this.currencySymbol = getConfig().getString("currency-symbol", "$");
         this.minutesForSummary = getConfig().getInt("minutes-for-summary", 1);
     }
 
@@ -235,7 +251,7 @@ public final class DasJobs extends JavaPlugin {
                 if (earned > 0) {
                     Player p = Bukkit.getPlayer(playerUUID);
                     if (p != null) {
-                        messageManager.sendMessage(p, "&7Du hast einen Lohn von &a" + String.format("%.2f", earned) + "&a$ &7erhalten.");
+                        messageManager.sendMessage(p, "&7Du hast einen Lohn von &a" + String.format("%.2f", earned) + "&a" + currencySymbol + " &7erhalten.");
                     }
                 }
             }
@@ -249,7 +265,6 @@ public final class DasJobs extends JavaPlugin {
                 repeatTicks);
         getLogger().info(ChatUtil.colorize("&a[DasJobs] Leaderboard-Update-Task gestartet (alle " + (repeatTicks / 20) + " Sekunden)."));
     }
-
 
     public void addTemporaryEarnedMoney(UUID playerUUID, double amount) {
         temporaryEarnedMoney.merge(playerUUID, amount, Double::sum);
@@ -305,5 +320,9 @@ public final class DasJobs extends JavaPlugin {
 
     public String getPrefix() {
         return prefix;
+    }
+
+    public String getCurrencySymbol() {
+        return currencySymbol;
     }
 }

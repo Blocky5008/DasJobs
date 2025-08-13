@@ -6,8 +6,12 @@
 
 
 # Präfix: Dies ist der Präfix für alle Nachrichten, die vom Plugin im Chat gesendet werden.
-# DU können Minecraft-Farbcodes verwenden (z. B. &c für Rot, &l für Fett).
+# DU können Minecraft-Farbcodes verwenden (z. B. &c für Rot, &l für Fett).
 prefix: "&c&lDasJobs &8>> "
+
+# currency-symbol: Das Symbol, das für die Währung im Spiel verwendet wird.
+# Dies wird in Nachrichten und in der Aktionsleiste angezeigt.
+currency-symbol: "$"
 
 # Minuten-für-Zusammenfassung: Diese Einstellung bestimmt, wie oft der Fortschritt (XP und Geld)
 # zusammengefasst und dem Spieler im Chat gesendet wird.
@@ -15,10 +19,18 @@ prefix: "&c&lDasJobs &8>> "
 minutes-for-summary: 1
 
 # ====================================================================================================
-# Job-Konfiguration
+# Job-Konfiguration für Addon
 # Unten kannst du einzelne Jobs definieren und anpassen. Jeder Job hat eigene
-# Fortschrittseinstellungen (XP-Formel, maximales Level) und spezifische Belohnungen für Aktionen.
+# Fortschrittseinstellungen (XP-Formul, maximales Level) und spezifische Belohnungen für Aktionen.
 # ====================================================================================================
+
+# infinity-axe-max-blocks: Die maximale Anzahl an Blöcken, für die ein Spieler Belohnungen erhält,
+# wenn er einen Baum mit einer Infinity-Axt (Timber-Axt) fällt.
+infinity-axe-max-blocks: 12
+
+# infinity-pickaxe-max-blocks: Die maximale Anzahl an Blöcken, für die ein Spieler Belohnungen
+# erhält, wenn er mit einer Infinity-Spitzhacke (Bohrer) abbaut.
+infinity-pickaxe-max-blocks: 4
 jobs:
   # --------------------------------------------------------------------------------
   # Miner-Job-Konfiguration
@@ -47,6 +59,10 @@ jobs:
     # Dieser Geldbonus steigt auch über „level-xp-max“ hinaus weiter an.
     level-money-increase: 0.3
 
+    # menu-icon-material: Das Item-Material, das im Job-Menü für diesen Job angezeigt wird.
+    # Verwende die internen Minecraft-Namen (z. B. 'DIAMOND_PICKAXE', 'NETHERITE_PICKAXE').
+    menu-icon-material: "DIAMOND_PICKAXE"
+
     # deaktivierte-Welten: Eine Liste von Welt-Namen, in denen dieser Job
     # kein Geld oder Erfahrung bringt. Spieler, die in diesen Welten Aktionen ausführen,
     # erhalten keine Jobbelohnungen.
@@ -59,10 +75,10 @@ jobs:
     # Material/Entity_Name: Verwende die internen Minecraft-Namen (z. B. 'STONE', 'ZOMBIE').
     # Für Pflanzen mit Wachstumsstufen oft 'MATERIAL-DATENWERT' (z. B. 'WHEAT-7').
     rewards:
-      Break: # Aktionen im Zusammenhang mit dem Zerstören von Blöcken
+      Break:
         andesite:
-          income: 1.0 # Verdientes Geld
-          experience: 1.0 # Verdientes XP
+          income: 1.0
+          experience: 1.0
         stone:
           income: 1.0
           experience: 1.0
@@ -151,6 +167,7 @@ jobs:
     level-xp-coefficient-a: 1800
     level-xp-constant-b: 350
     level-money-increase: 0.8
+    menu-icon-material: "DIAMOND_AXE"
     disabled-world:
       - world
     rewards:
@@ -231,10 +248,11 @@ jobs:
     level-xp-coefficient-a: 1000
     level-xp-constant-b: 300
     level-money-increase: 0.5
+    menu-icon-material: "DIAMOND_SWORD"
     disabled-world:
       - world
     rewards:
-      Kill: # Aktionen im Zusammenhang mit dem Töten von Entitäten
+      Kill:
         Player:
           income: 50.0
           experience: 10.0
@@ -338,6 +356,7 @@ jobs:
     level-xp-coefficient-a: 2000
     level-xp-constant-b: 500
     level-money-increase: 0.3
+    menu-icon-material: "DIAMOND_SHOVEL"
     disabled-world:
       - world
     rewards:
@@ -382,6 +401,7 @@ jobs:
     level-xp-coefficient-a: 1600
     level-xp-constant-b: 250
     level-money-increase: 0.8
+    menu-icon-material: "DIAMOND_HOE"
     disabled-world:
       - world
     rewards:

@@ -1,10 +1,10 @@
 name: DasJobs
-version: 1.0
+version: 1.2.1
 main: de.Blocky.dasjobs.DasJobs
 api-version: 1.21
 author: Blocky
 description: Spieler können mit Jobs Geld verdienen und Level aufsteigen.
-depend: [Vault, Essentials]
+depend: [Vault]
 
 commands:
   jobs:

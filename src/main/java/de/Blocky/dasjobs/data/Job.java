@@ -6,7 +6,7 @@ import java.util.Map;
 public class Job {
     private final String name;
     private final String displayName;
-    private final String iconMaterial;
+    private final String menuIconMaterial; // GEÄNDERT: Name für Klarheit angepasst
     private final List<String> description;
     private final int levelXpMax;
     private final double levelXpCoefficientA;
@@ -15,12 +15,12 @@ public class Job {
     private final List<String> disabledWorlds;
     private final Map<JobAction, Map<String, JobReward>> rewards;
 
-    public Job(String name, String displayName, String iconMaterial, List<String> description,
+    public Job(String name, String displayName, String menuIconMaterial, List<String> description,
                int levelXpMax, double levelXpCoefficientA, double levelXpConstantB,
                double levelMoneyIncrease, List<String> disabledWorlds, Map<JobAction, Map<String, JobReward>> rewards) {
         this.name = name;
         this.displayName = displayName;
-        this.iconMaterial = iconMaterial;
+        this.menuIconMaterial = menuIconMaterial; // GEÄNDERT
         this.description = description;
         this.levelXpMax = levelXpMax;
         this.levelXpCoefficientA = levelXpCoefficientA;
@@ -38,8 +38,8 @@ public class Job {
         return displayName;
     }
 
-    public String getIconMaterial() {
-        return iconMaterial;
+    public String getMenuIconMaterial() {
+        return menuIconMaterial;
     }
 
     public List<String> getDescription() {

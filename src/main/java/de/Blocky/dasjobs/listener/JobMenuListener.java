@@ -68,11 +68,11 @@ public class JobMenuListener implements Listener {
                 .build();
         jobMenu.setItem(CLOSE_BUTTON_SLOT, closeButton);
 
-        addJobItem(jobMenu, 11, "miner", "Miner", Material.DIAMOND_PICKAXE, player);
-        addJobItem(jobMenu, 12, "holzfaeller", "Holzfäller", Material.DIAMOND_AXE, player);
-        addJobItem(jobMenu, 13, "jaeger", "Jäger", Material.DIAMOND_SWORD, player);
-        addJobItem(jobMenu, 14, "graeber", "Gräber", Material.DIAMOND_SHOVEL, player);
-        addJobItem(jobMenu, 15, "farmer", "Farmer", Material.DIAMOND_HOE, player);
+        addJobItem(jobMenu, 11, "miner", "Miner", player);
+        addJobItem(jobMenu, 12, "holzfaeller", "Holzfäller", player);
+        addJobItem(jobMenu, 13, "jaeger", "Jäger", player);
+        addJobItem(jobMenu, 14, "graeber", "Gräber", player);
+        addJobItem(jobMenu, 15, "farmer", "Farmer", player);
 
         addRewardMenuItem(jobMenu, 20, "miner");
         addRewardMenuItem(jobMenu, 21, "holzfaeller");
@@ -89,8 +89,10 @@ public class JobMenuListener implements Listener {
         player.openInventory(jobMenu);
     }
 
-    private void addJobItem(Inventory menu, int slot, String jobCanonicalName, String jobDisplayName, Material material, Player player) {
-        Job job = plugin.getJobManager().getJob(jobCanonicalName).orElse(null);
+    private void addJobItem(Inventory menu, int slot, String jobCanonicalName, String jobDisplayName, Player player) {
+        Optional<Job> optionalJob = plugin.getJobManager().getJob(jobCanonicalName);
+        Job job = optionalJob.orElse(null);
+
         List<String> lore = new ArrayList<>();
 
         if (job != null) {
@@ -104,7 +106,7 @@ public class JobMenuListener implements Listener {
                 if (breakRewards != null && !breakRewards.isEmpty()) {
                     lore.add(ChatUtil.colorize("&cAbbaubare Blöcke:"));
                     breakRewards.forEach((materialName, reward) -> {
-                        lore.add(ChatUtil.colorize("&8 - &7" + materialName + ": &e+" + String.format("%.2f", reward.getExperience()) + " XP &8/ &a+" + String.format("%.2f", reward.getIncome()) + " $"));
+                        lore.add(ChatUtil.colorize("&8 - &7" + materialName + ": &e+" + String.format("%.2f", reward.getExperience()) + " XP &8/ &a+" + String.format("%.2f", reward.getIncome()) + " " + plugin.getCurrencySymbol()));
                     });
                     hasRewardsConfigured = true;
                 }
@@ -115,7 +117,7 @@ public class JobMenuListener implements Listener {
                 if (killRewards != null && !killRewards.isEmpty()) {
                     lore.add(ChatUtil.colorize("&cTötbare Mobs:"));
                     killRewards.forEach((entityType, reward) -> {
-                        lore.add(ChatUtil.colorize("&8 - &7" + entityType + ": &e+" + String.format("%.2f", reward.getExperience()) + " XP &8/ &a+" + String.format("%.2f", reward.getIncome()) + " $"));
+                        lore.add(ChatUtil.colorize("&8 - &7" + entityType + ": &e+" + String.format("%.2f", reward.getExperience()) + " XP &8/ &a+" + String.format("%.2f", reward.getIncome()) + " " + plugin.getCurrencySymbol()));
                     });
                     hasRewardsConfigured = true;
                 }
@@ -152,6 +154,16 @@ public class JobMenuListener implements Listener {
             plugin.getLogger().warning("Could not find job configuration for job: " + jobCanonicalName);
             lore.add(ChatUtil.colorize("&cJob-Beschreibung nicht verfügbar."));
             lore.add(ChatUtil.colorize("&cBitte kontaktiere einen Administrator."));
+        }
+
+        // KORRIGIERT: Konvertiere den String-Wert in ein Material-Objekt
+        String materialName = (job != null) ? job.getMenuIconMaterial() : "BARRIER";
+        Material material = Material.getMaterial(materialName);
+
+        // Füge einen Fallback hinzu, falls das Material ungültig ist
+        if (material == null) {
+            plugin.getLogger().warning("Ungültiges Material '" + materialName + "' für Job '" + jobCanonicalName + "'. Verwende BARRIER als Standard.");
+            material = Material.BARRIER;
         }
 
         ItemStack jobItem = new ItemBuilder(material)
@@ -226,11 +238,11 @@ public class JobMenuListener implements Listener {
                 addTopListItem(menu, 32, "graeber");
                 addTopListItem(menu, 33, "farmer");
 
-                addJobItem(menu, 11, "miner", "Miner", Material.DIAMOND_PICKAXE, player);
-                addJobItem(menu, 12, "holzfaeller", "Holzfäller", Material.DIAMOND_AXE, player);
-                addJobItem(menu, 13, "jaeger", "Jäger", Material.DIAMOND_SWORD, player);
-                addJobItem(menu, 14, "graeber", "Gräber", Material.DIAMOND_SHOVEL, player);
-                addJobItem(menu, 15, "farmer", "Farmer", Material.DIAMOND_HOE, player);
+                addJobItem(menu, 11, "miner", "Miner", player);
+                addJobItem(menu, 12, "holzfaeller", "Holzfäller", player);
+                addJobItem(menu, 13, "jaeger", "Jäger", player);
+                addJobItem(menu, 14, "graeber", "Gräber", player);
+                addJobItem(menu, 15, "farmer", "Farmer", player);
 
             } else {
                 openJobMenus.remove(playerId);

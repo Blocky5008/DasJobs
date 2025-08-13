@@ -12,24 +12,61 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.block.data.type.Cocoa;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.Sound;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BlockBreakListener implements Listener {
 
     private final DasJobs plugin;
     private final MessageManager messageManager;
+    private final Map<UUID, Integer> infinityAxeBreakCounter = new ConcurrentHashMap<>();
+    private final Map<UUID, Integer> infinityPickaxeBreakCounter = new ConcurrentHashMap<>();
+    private BukkitRunnable counterResetTask;
 
     public BlockBreakListener(DasJobs plugin) {
         this.plugin = plugin;
         this.messageManager = plugin.getMessageManager();
+        startCounterResetTask();
     }
+
+    private void startCounterResetTask() {
+        if (counterResetTask != null) {
+            counterResetTask.cancel();
+        }
+        counterResetTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                infinityAxeBreakCounter.clear();
+                infinityPickaxeBreakCounter.clear();
+            }
+        };
+        counterResetTask.runTaskTimer(plugin, 0L, 1L);
+    }
+
+    public void stopCounterResetTask() {
+        if (counterResetTask != null) {
+            counterResetTask.cancel();
+            counterResetTask = null;
+        }
+    }
+
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
         Player player = event.getPlayer();
         Block block = event.getBlock();
 
@@ -42,8 +79,29 @@ public class BlockBreakListener implements Listener {
             return;
         }
 
-        final String worldName = block.getWorld().getName();
-        final Material material = block.getType();
+        ItemStack itemInHand = player.getInventory().getItemInMainHand();
+        if (isInfinityAxe(itemInHand)) {
+            int currentBreaks = infinityAxeBreakCounter.getOrDefault(player.getUniqueId(), 0);
+            int maxAxeBreaks = plugin.getConfig().getInt("infinity-axe-max-blocks", 12);
+            if (currentBreaks >= maxAxeBreaks) {
+                return;
+            }
+            infinityAxeBreakCounter.put(player.getUniqueId(), currentBreaks + 1);
+        }
+
+        if (isInfinityPickaxe(itemInHand)) {
+            int currentBreaks = infinityPickaxeBreakCounter.getOrDefault(player.getUniqueId(), 0);
+            int maxPickaxeBreaks = plugin.getConfig().getInt("infinity-pickaxe-max-blocks", 4);
+            if (currentBreaks >= maxPickaxeBreaks) {
+                return;
+            }
+            infinityPickaxeBreakCounter.put(player.getUniqueId(), currentBreaks + 1);
+        }
+
+        if (!block.isPreferredTool(itemInHand)) {
+            return;
+        }
+
         if (block.getBlockData() instanceof Ageable ageable) {
             if (ageable.getAge() != ageable.getMaximumAge()) {
                 return;
@@ -53,6 +111,8 @@ public class BlockBreakListener implements Listener {
                 return;
             }
         }
+        final String worldName = block.getWorld().getName();
+        final Material material = block.getType();
         final String effectiveBlockKey = material.name().toUpperCase();
 
 
@@ -97,11 +157,25 @@ public class BlockBreakListener implements Listener {
                         percentage = Math.min(percentage, 100);
 
                         String actionBarMessage = ChatUtil.colorize(
-                                "&e" + String.format("%.1f", earnedXp) + "XP &8• &a" + String.format("%.2f", earnedMoney) + "$ &8• &c" + job.getName() + " &8• &bLevel " + playerData.getLevel(job.getName()) +
+                                "&e" + String.format("%.1f", earnedXp) + "XP &8• &a" + String.format("%.2f", earnedMoney) + plugin.getCurrencySymbol() + " &8• &c" + job.getName() + " &8• &bLevel " + playerData.getLevel(job.getName()) +
                                         " &8• &b" + String.format("%.0f", percentage) + "%"
                         );
                         player.sendActionBar(actionBarMessage);
                     }
                 });
+    }
+    private boolean isInfinityAxe(ItemStack item) {
+        if (item == null || item.getType().isAir()) {
+            return false;
+        }
+        String materialName = item.getType().name();
+        return materialName.contains("_AXE") && item.containsEnchantment(Enchantment.INFINITY);
+    }
+    private boolean isInfinityPickaxe(ItemStack item) {
+        if (item == null || item.getType().isAir()) {
+            return false;
+        }
+        String materialName = item.getType().name();
+        return materialName.contains("_PICKAXE") && item.containsEnchantment(Enchantment.INFINITY);
     }
 }

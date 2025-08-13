@@ -25,9 +25,8 @@ public class JobConfigManager {
     public void setupJobsConfig() {
         FileConfiguration config = plugin.getConfig();
 
-        config.addDefault("#_COMMENT_prefix", "Das Präfix für alle Nachrichten im Chat");
         config.addDefault("prefix", "&c&lDasJobs &8>> ");
-        config.addDefault("#_COMMENT_minutes_for_summary", "Wie viele Minuten gewonnener Fortschritt gesammelt wird, bevor die Zusammenfassung gesendet wird.");
+        config.addDefault("currency-symbol", "$");
         config.addDefault("minutes-for-summary", 1);
 
 
@@ -63,11 +62,23 @@ public class JobConfigManager {
         config.addDefault(basePath + ".level-xp-coefficient-a", 1.0);
         config.addDefault(basePath + ".level-xp-constant-b", 10.0);
         config.addDefault(basePath + ".level-money-increase", 0.05);
+
+        if (jobName.equalsIgnoreCase("Miner")) {
+            config.addDefault(basePath + ".menu-icon-material", "DIAMOND_PICKAXE");
+        } else if (jobName.equalsIgnoreCase("Holzfaeller")) {
+            config.addDefault(basePath + ".menu-icon-material", "DIAMOND_AXE");
+        } else if (jobName.equalsIgnoreCase("Jaeger")) {
+            config.addDefault(basePath + ".menu-icon-material", "DIAMOND_SWORD");
+        } else if (jobName.equalsIgnoreCase("Graeber")) {
+            config.addDefault(basePath + ".menu-icon-material", "DIAMOND_SHOVEL");
+        } else if (jobName.equalsIgnoreCase("Farmer")) {
+            config.addDefault(basePath + ".menu-icon-material", "DIAMOND_HOE");
+        }
+
         config.addDefault(basePath + ".disabled-world", List.of("world"));
 
         if (jobName.equalsIgnoreCase("Miner")) {
             config.addDefault(basePath + ".display-name", "&6Miner");
-            config.addDefault(basePath + ".icon-material", "STONE_PICKAXE");
             config.addDefault(basePath + ".description", Arrays.asList(
                     "&7Sei ein fähiger Miner!",
                     "&7Baue Erze und Blöcke ab, um Geld und XP zu verdienen.",
@@ -81,7 +92,6 @@ public class JobConfigManager {
             config.addDefault(basePath + ".disabled-world", List.of("world_nether", "world_the_end"));
         } else if (jobName.equalsIgnoreCase("Holzfaeller")) {
             config.addDefault(basePath + ".display-name", "&2Holzfäller");
-            config.addDefault(basePath + ".icon-material", "WOODEN_AXE");
             config.addDefault(basePath + ".description", Arrays.asList(
                     "&7Werde ein geschickter Holzfäller!",
                     "&7Fälle Bäume und ernte Holz für Profit und Erfahrung.",
@@ -95,7 +105,6 @@ public class JobConfigManager {
             config.addDefault(basePath + ".disabled-world", List.of("world_the_end"));
         } else if (jobName.equalsIgnoreCase("Jaeger")) {
             config.addDefault(basePath + ".display-name", "&4Jäger");
-            config.addDefault(basePath + ".icon-material", "BOW");
             config.addDefault(basePath + ".description", Arrays.asList(
                     "&7Jage und besiege gefährliche Kreaturen!",
                     "&7Erhalte Belohnungen für jeden erfolgreichen Abschuss.",
@@ -109,7 +118,6 @@ public class JobConfigManager {
             config.addDefault(basePath + ".disabled-world", List.of("world_nether"));
         } else if (jobName.equalsIgnoreCase("Graeber")) {
             config.addDefault(basePath + ".display-name", "&8Gräber");
-            config.addDefault(basePath + ".icon-material", "IRON_SHOVEL");
             config.addDefault(basePath + ".description", Arrays.asList(
                     "&7Grabe dich durch die Erde!",
                     "&7Sammle Rohstoffe wie Erde, Sand und Kies.",
@@ -123,7 +131,6 @@ public class JobConfigManager {
             config.addDefault(basePath + ".disabled-world", List.of("world_the_end"));
         } else if (jobName.equalsIgnoreCase("Farmer")) {
             config.addDefault(basePath + ".display-name", "&aFarmer");
-            config.addDefault(basePath + ".icon-material", "WHEAT");
             config.addDefault(basePath + ".description", Arrays.asList(
                     "&7Bestelle deine Felder und ernte!",
                     "&7Baue Pflanzen an und ernte sie für Geld und Erfahrung.",
@@ -299,9 +306,8 @@ public class JobConfigManager {
         }
 
         String displayName = ChatUtil.colorize(config.getString(basePath + ".display-name", "&r" + jobName));
-        String iconMaterial = config.getString(basePath + ".icon-material", "GRASS_BLOCK").toUpperCase();
+        String menuIconMaterial = config.getString(basePath + ".menu-icon-material", "BARRIER").toUpperCase();
         List<String> description = ChatUtil.colorize(config.getStringList(basePath + ".description"));
-
 
         int levelXpMax = config.getInt(basePath + ".level-xp-max");
         double levelXpCoefficientA = config.getDouble(basePath + ".level-xp-coefficient-a");
@@ -338,7 +344,7 @@ public class JobConfigManager {
             plugin.getLogger().warning("Keine Belohnungen für Job " + jobName + " in config.yml gefunden. Der Job wird ohne Belohnungen geladen.");
         }
 
-        return new Job(jobName.toLowerCase(), displayName, iconMaterial, description,
+        return new Job(jobName.toLowerCase(), displayName, menuIconMaterial, description,
                 levelXpMax, levelXpCoefficientA, levelXpConstantB, levelMoneyIncrease, disabledWorlds, rewards);
     }
 
