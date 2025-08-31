@@ -10,7 +10,6 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionType;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +24,7 @@ public class ItemBuilder {
     }
 
     public ItemBuilder(ItemStack itemStack) {
-        this.item = itemStack.clone(); // Clone to avoid modifying the original
+        this.item = itemStack.clone();
         this.meta = this.item.getItemMeta();
     }
 
@@ -102,6 +101,12 @@ public class ItemBuilder {
         if (meta instanceof PotionMeta) {
             ((PotionMeta) meta).setBasePotionType(potionType);
         }
+        return this;
+    }
+
+    public ItemBuilder addGlow() {
+        meta.addEnchant(Enchantment.UNBREAKING, 1, true);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         return this;
     }
 

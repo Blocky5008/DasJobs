@@ -19,9 +19,6 @@ public class JobManager {
         this.plugin = plugin;
     }
 
-    /**
-     * Loads all job configurations directly from config.yml.
-     */
     public void loadJobsFromConfig() {
         jobs.clear();
 

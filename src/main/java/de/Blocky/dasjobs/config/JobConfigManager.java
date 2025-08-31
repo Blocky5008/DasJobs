@@ -44,6 +44,11 @@ public class JobConfigManager {
                             " #           rewards.Kill.ZOMBIE.income: 5.0, rewards.Kill.ZOMBIE.experience: 3.0\n" +
                             " # Achte auf die korrekte Schreibweise der Minecraft-Materialien und Entity-Typen (Großbuchstaben und Underscores für Leerzeichen).\n" +
                             " # Du kannst hier eigene Belohnungen hinzufügen oder bestehende ändern/entfernen.\n" +
+                            " # --------------------------------------------------------------------------------\n" +
+                            " # QUESTS: Hier können Quests für jeden Job konfiguriert werden.\n" +
+                            " # Beispiel: quests.quest_1.slot: 1, quests.quest_1.lore: \"Sammle 10 Diamanten\", quests.quest_1.display-item: \"DIAMOND\"\n" +
+                            " #          quests.quest_1.task: \"BREAK\", quests.quest_1.specific-task: \"DIAMOND_ORE\", quests.quest_1.amount: 10\n" +
+                            " #          quests.quest_1.reward: \"JOBXP\", quests.quest_1.reward-amount: 100\n" +
                             " # --------------------------------------------------------------------------------");
         }
 
@@ -156,6 +161,8 @@ public class JobConfigManager {
                 config.addDefault(basePath + ".rewards." + action.name() + "." + itemKey + ".experience", reward.getExperience());
             }
         }
+
+        addDefaultQuestsForJob(config, basePath, jobName);
     }
 
     private Map<JobAction, Map<String, JobReward>> getDefaultRewardsForJob(String jobName) {
@@ -362,5 +369,99 @@ public class JobConfigManager {
         }
         plugin.getLogger().info("Found " + actualJobNames.size() + " actual job names: " + actualJobNames.toString());
         return actualJobNames;
+    }
+
+    private void addDefaultQuestsForJob(FileConfiguration config, String basePath, String jobName) {
+        if (jobName.equalsIgnoreCase("Miner")) {
+            config.addDefault(basePath + ".quests.quest_1.slot", 1);
+            config.addDefault(basePath + ".quests.quest_1.lore", "Sammle 50 Kohle");
+            config.addDefault(basePath + ".quests.quest_1.display-item", "COAL_ORE");
+            config.addDefault(basePath + ".quests.quest_1.task", "BREAK");
+            config.addDefault(basePath + ".quests.quest_1.specific-task", "COAL_ORE");
+            config.addDefault(basePath + ".quests.quest_1.amount", 50);
+            config.addDefault(basePath + ".quests.quest_1.reward", "JOBXP");
+            config.addDefault(basePath + ".quests.quest_1.reward-amount", 100);
+
+            config.addDefault(basePath + ".quests.quest_2.slot", 2);
+            config.addDefault(basePath + ".quests.quest_2.lore", "Sammle 25 Eisenerz");
+            config.addDefault(basePath + ".quests.quest_2.display-item", "IRON_ORE");
+            config.addDefault(basePath + ".quests.quest_2.task", "BREAK");
+            config.addDefault(basePath + ".quests.quest_2.specific-task", "IRON_ORE");
+            config.addDefault(basePath + ".quests.quest_2.amount", 25);
+            config.addDefault(basePath + ".quests.quest_2.reward", "MONEY");
+            config.addDefault(basePath + ".quests.quest_2.reward-amount", 500);
+        } else if (jobName.equalsIgnoreCase("Holzfaeller")) {
+            config.addDefault(basePath + ".quests.quest_1.slot", 1);
+            config.addDefault(basePath + ".quests.quest_1.lore", "Fälle 100 Eichenstämme");
+            config.addDefault(basePath + ".quests.quest_1.display-item", "OAK_LOG");
+            config.addDefault(basePath + ".quests.quest_1.task", "BREAK");
+            config.addDefault(basePath + ".quests.quest_1.specific-task", "OAK_LOG");
+            config.addDefault(basePath + ".quests.quest_1.amount", 100);
+            config.addDefault(basePath + ".quests.quest_1.reward", "JOBXP");
+            config.addDefault(basePath + ".quests.quest_1.reward-amount", 150);
+
+            config.addDefault(basePath + ".quests.quest_2.slot", 2);
+            config.addDefault(basePath + ".quests.quest_2.lore", "Fälle 50 Fichtenstämme");
+            config.addDefault(basePath + ".quests.quest_2.display-item", "SPRUCE_LOG");
+            config.addDefault(basePath + ".quests.quest_2.task", "BREAK");
+            config.addDefault(basePath + ".quests.quest_2.specific-task", "SPRUCE_LOG");
+            config.addDefault(basePath + ".quests.quest_2.amount", 50);
+            config.addDefault(basePath + ".quests.quest_2.reward", "MONEY");
+            config.addDefault(basePath + ".quests.quest_2.reward-amount", 300);
+        } else if (jobName.equalsIgnoreCase("Jaeger")) {
+            config.addDefault(basePath + ".quests.quest_1.slot", 1);
+            config.addDefault(basePath + ".quests.quest_1.lore", "Töte 20 Zombies");
+            config.addDefault(basePath + ".quests.quest_1.display-item", "ZOMBIE_HEAD");
+            config.addDefault(basePath + ".quests.quest_1.task", "KILL");
+            config.addDefault(basePath + ".quests.quest_1.specific-task", "ZOMBIE");
+            config.addDefault(basePath + ".quests.quest_1.amount", 20);
+            config.addDefault(basePath + ".quests.quest_1.reward", "JOBXP");
+            config.addDefault(basePath + ".quests.quest_1.reward-amount", 200);
+
+            config.addDefault(basePath + ".quests.quest_2.slot", 2);
+            config.addDefault(basePath + ".quests.quest_2.lore", "Töte 15 Skelette");
+            config.addDefault(basePath + ".quests.quest_2.display-item", "SKELETON_HEAD");
+            config.addDefault(basePath + ".quests.quest_2.task", "KILL");
+            config.addDefault(basePath + ".quests.quest_2.specific-task", "SKELETON");
+            config.addDefault(basePath + ".quests.quest_2.amount", 15);
+            config.addDefault(basePath + ".quests.quest_2.reward", "MONEY");
+            config.addDefault(basePath + ".quests.quest_2.reward-amount", 400);
+        } else if (jobName.equalsIgnoreCase("Graeber")) {
+            config.addDefault(basePath + ".quests.quest_1.slot", 1);
+            config.addDefault(basePath + ".quests.quest_1.lore", "Grabe 200 Erde");
+            config.addDefault(basePath + ".quests.quest_1.display-item", "DIRT");
+            config.addDefault(basePath + ".quests.quest_1.task", "BREAK");
+            config.addDefault(basePath + ".quests.quest_1.specific-task", "DIRT");
+            config.addDefault(basePath + ".quests.quest_1.amount", 200);
+            config.addDefault(basePath + ".quests.quest_1.reward", "JOBXP");
+            config.addDefault(basePath + ".quests.quest_1.reward-amount", 100);
+
+            config.addDefault(basePath + ".quests.quest_2.slot", 2);
+            config.addDefault(basePath + ".quests.quest_2.lore", "Grabe 100 Sand");
+            config.addDefault(basePath + ".quests.quest_2.display-item", "SAND");
+            config.addDefault(basePath + ".quests.quest_2.task", "BREAK");
+            config.addDefault(basePath + ".quests.quest_2.specific-task", "SAND");
+            config.addDefault(basePath + ".quests.quest_2.amount", 100);
+            config.addDefault(basePath + ".quests.quest_2.reward", "MONEY");
+            config.addDefault(basePath + ".quests.quest_2.reward-amount", 250);
+        } else if (jobName.equalsIgnoreCase("Farmer")) {
+            config.addDefault(basePath + ".quests.quest_1.slot", 1);
+            config.addDefault(basePath + ".quests.quest_1.lore", "Ernte 50 Weizen");
+            config.addDefault(basePath + ".quests.quest_1.display-item", "WHEAT");
+            config.addDefault(basePath + ".quests.quest_1.task", "BREAK");
+            config.addDefault(basePath + ".quests.quest_1.specific-task", "WHEAT");
+            config.addDefault(basePath + ".quests.quest_1.amount", 50);
+            config.addDefault(basePath + ".quests.quest_1.reward", "JOBXP");
+            config.addDefault(basePath + ".quests.quest_1.reward-amount", 120);
+
+            config.addDefault(basePath + ".quests.quest_2.slot", 2);
+            config.addDefault(basePath + ".quests.quest_2.lore", "Ernte 30 Karotten");
+            config.addDefault(basePath + ".quests.quest_2.display-item", "CARROT");
+            config.addDefault(basePath + ".quests.quest_2.task", "BREAK");
+            config.addDefault(basePath + ".quests.quest_2.specific-task", "CARROT");
+            config.addDefault(basePath + ".quests.quest_2.amount", 30);
+            config.addDefault(basePath + ".quests.quest_2.reward", "MONEY");
+            config.addDefault(basePath + ".quests.quest_2.reward-amount", 350);
+        }
     }
 }

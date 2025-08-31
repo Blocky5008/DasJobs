@@ -10,10 +10,12 @@ import de.Blocky.dasjobs.listener.EntityKillListener;
 import de.Blocky.dasjobs.listener.PlayerJoinQuitListener;
 import de.Blocky.dasjobs.listener.RewardMenuListener;
 import de.Blocky.dasjobs.listener.JobMenuListener;
+import de.Blocky.dasjobs.listener.QuestMenuListener;
 import de.Blocky.dasjobs.manager.BoosterManager;
 import de.Blocky.dasjobs.manager.EconomyManager;
 import de.Blocky.dasjobs.manager.JobManager;
 import de.Blocky.dasjobs.manager.MessageManager;
+import de.Blocky.dasjobs.manager.QuestManager;
 import de.Blocky.dasjobs.manager.RewardManager;
 import de.Blocky.dasjobs.tracker.BlockPlaceTracker;
 import de.Blocky.dasjobs.util.ChatUtil;
@@ -44,8 +46,10 @@ public final class DasJobs extends JavaPlugin {
     private BlockPlaceTracker blockPlaceTracker;
     private BoosterManager boosterManager;
     private RewardManager rewardManager;
+    private QuestManager questManager;
     private RewardMenuListener rewardMenuListener;
     private JobMenuListener jobMenuListener;
+    private QuestMenuListener questMenuListener;
     private BlockBreakListener blockBreakListener;
     private BukkitTask leaderboardUpdateTask;
 
@@ -74,6 +78,7 @@ public final class DasJobs extends JavaPlugin {
 
         boosterManager.loadBoosters();
         rewardManager.loadRewards();
+        questManager.loadQuests();
 
         registerListeners();
         registerCommands();
@@ -100,6 +105,9 @@ public final class DasJobs extends JavaPlugin {
         if (rewardManager != null) {
             rewardManager.saveRewards();
         }
+        if (questManager != null) {
+            questManager.saveQuestProgress();
+        }
         if (blockBreakListener != null) {
             blockBreakListener.stopCounterResetTask();
         }
@@ -122,9 +130,11 @@ public final class DasJobs extends JavaPlugin {
         blockPlaceTracker = new BlockPlaceTracker(this);
         boosterManager = new BoosterManager(this);
         rewardManager = new RewardManager(this);
+        questManager = new QuestManager(this);
         jobManager = new JobManager(this);
         rewardMenuListener = new RewardMenuListener(this);
         jobMenuListener = new JobMenuListener(this);
+        questMenuListener = new QuestMenuListener(this);
         blockBreakListener = new BlockBreakListener(this);
 
         setupConfig();
@@ -137,6 +147,7 @@ public final class DasJobs extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerJoinQuitListener(this), this);
         getServer().getPluginManager().registerEvents(rewardMenuListener, this);
         getServer().getPluginManager().registerEvents(jobMenuListener, this);
+        getServer().getPluginManager().registerEvents(questMenuListener, this);
     }
 
     private void registerCommands() {
@@ -189,6 +200,8 @@ public final class DasJobs extends JavaPlugin {
         getLogger().info(ChatUtil.colorize("&a[DasJobs] Booster-Konfigurationen neu geladen."));
         rewardManager.loadRewards();
         getLogger().info(ChatUtil.colorize("&a[DasJobs] Belohnungs-Konfigurationen neu geladen."));
+        questManager.loadQuests();
+        getLogger().info(ChatUtil.colorize("&a[DasJobs] Quest-Konfigurationen neu geladen."));
 
 
         getLogger().info(ChatUtil.colorize("&a[DasJobs] Alle Konfigurationsdateien und Jobs erfolgreich neu geladen!"));
@@ -310,12 +323,20 @@ public final class DasJobs extends JavaPlugin {
         return rewardManager;
     }
 
+    public QuestManager getQuestManager() {
+        return questManager;
+    }
+
     public RewardMenuListener getRewardMenuListener() {
         return rewardMenuListener;
     }
 
     public JobMenuListener getJobMenuListener() {
         return jobMenuListener;
+    }
+
+    public QuestMenuListener getQuestMenuListener() {
+        return questMenuListener;
     }
 
     public String getPrefix() {

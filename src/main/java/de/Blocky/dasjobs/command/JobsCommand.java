@@ -4,6 +4,7 @@ import de.Blocky.dasjobs.DasJobs;
 import de.Blocky.dasjobs.data.Booster;
 import de.Blocky.dasjobs.data.Job;
 import de.Blocky.dasjobs.data.PlayerJobData;
+import de.Blocky.dasjobs.data.Quest;
 import de.Blocky.dasjobs.listener.JobMenuListener;
 import de.Blocky.dasjobs.manager.MessageManager;
 import de.Blocky.dasjobs.util.ChatUtil;
@@ -35,13 +36,13 @@ public class JobsCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            messageManager.sendMessage(sender, "&cDiesen Befehl können nur Spieler ausführen.");
-            return true;
-        }
-        Player player = (Player) sender;
+        Player player = (sender instanceof Player) ? (Player) sender : null;
 
         if (args.length == 0) {
+            if (player == null) {
+                messageManager.sendMessage(sender, "&cDiesen Befehl können nur Spieler ausführen.");
+                return true;
+            }
             jobMenuListener.openJobMenu(player);
             return true;
         }
@@ -59,6 +60,10 @@ public class JobsCommand implements CommandExecutor {
                 handleBoosterCommand(sender, args);
                 break;
             case "info":
+                if (player == null) {
+                    messageManager.sendMessage(sender, "&cDiesen Befehl können nur Spieler ausführen.");
+                    break;
+                }
                 messageManager.sendMessage(sender, "&cInformationen über deine Jobs:");
                 plugin.getJobManager().getJobs().values().forEach(job -> {
                     PlayerJobData playerData = plugin.getPlayerDataManager().getPlayerData(player.getUniqueId());
@@ -71,11 +76,26 @@ public class JobsCommand implements CommandExecutor {
                     messageManager.sendMessage(sender, "&c- &c" + job.getDisplayName() + ": &aLevel " + level + " &7(" + progress + ")");
                 });
                 break;
+            case "quests":
+                if (player == null) {
+                    messageManager.sendMessage(sender, "&cDiesen Befehl können nur Spieler ausführen.");
+                } else {
+                    handleQuestsCommand(player, args);
+                }
+                break;
             case "belohnung":
-                handleRewardMenuCommand(player, args);
+                if (player == null) {
+                    messageManager.sendMessage(sender, "&cDiesen Befehl können nur Spieler ausführen.");
+                } else {
+                    handleRewardMenuCommand(player, args);
+                }
                 break;
             case "setbelohnung":
-                handleSetRewardCommand(player, args);
+                if (player == null) {
+                    messageManager.sendMessage(sender, "&cDiesen Befehl können nur Spieler ausführen.");
+                } else {
+                    handleSetRewardCommand(player, args);
+                }
                 break;
             case "removebelohnung":
                 handleRemoveRewardCommand(sender, args);
@@ -84,13 +104,17 @@ public class JobsCommand implements CommandExecutor {
                 handleResetClaimedRewardsCommand(sender, args);
                 break;
             case "top":
-                handleTopCommand(player, args);
+                if (player == null) {
+                    messageManager.sendMessage(sender, "&cDiesen Befehl können nur Spieler ausführen.");
+                } else {
+                    handleTopCommand(player, args);
+                }
                 break;
             case "hilfe":
-                sendHelpMessage(player);
+                sendHelpMessage(sender);
                 break;
             default:
-                messageManager.sendMessage(player, "&cUnbekannter Befehl. Nutze /jobs hilfe für Hilfe.");
+                messageManager.sendMessage(sender, "&cUnbekannter Befehl. Nutze /jobs hilfe für Hilfe.");
                 break;
         }
 
@@ -102,6 +126,7 @@ public class JobsCommand implements CommandExecutor {
         messageManager.sendMessage(sender, "&e/jobs &7- Öffnet das Jobmenü.");
         messageManager.sendMessage(sender, "&e/jobs hilfe &7- Zeigt diese Hilfe an.");
         messageManager.sendMessage(sender, "&e/jobs info &7- Zeigt Informationen über deine Jobs an."); // Updated description
+        messageManager.sendMessage(sender, "&e/jobs quests &7- Öffnet das Questmenü.");
         messageManager.sendMessage(sender, "&e/jobs belohnung <JobName> &7- Öffnet das Belohnungsmenü für einen Job.");
         messageManager.sendMessage(sender, "&e/jobs top <JobName> &7- Zeigt die Top-Spieler für einen Job an.");
         messageManager.sendMessage(sender, "&a/jobs level <spieler> <jobname> [level] &7- Zeigt/Setzt das Job-Level eines Spielers. (Admin)");
@@ -110,6 +135,7 @@ public class JobsCommand implements CommandExecutor {
         messageManager.sendMessage(sender, "&a/jobs resetBelohnung <Spieler> <Jobname> &7- Setzt abgeholte Belohnungen zurück. (Admin)");
         messageManager.sendMessage(sender, "&a/jobs reload &7- Lädt alle Plugin-Dateien neu. (Admin)");
         messageManager.sendMessage(sender, "&a/jobs booster <xp|money> <jobname|*> <multiplier> <time_in_minutes> &7- Startet einen Job-Booster. (Admin)");
+        messageManager.sendMessage(sender, "&a/jobs quests erstellen <item> <task> <specific> <amount> <reward> <rewardAmount> &7- Erstellt eine neue Quest. (Admin)");
     }
 
     private void handleLevelCommand(CommandSender sender, String[] args) {
@@ -242,7 +268,7 @@ public class JobsCommand implements CommandExecutor {
             onlinePlayer.playSound(onlinePlayer.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.0f, 1.0f);
         }
 
-        messageManager.sendMessage(sender, "&7Der Spieler &a" + sender.getName() + " &7hat einen &a" + String.format("%.2f", multiplier) + " &7" + boostTypeName + " Booster für &a" + durationMinutes + " Minuten &7gezündet.");
+        Bukkit.broadcastMessage(plugin.getPrefix() + ChatUtil.colorize("&7Der Spieler &a" + sender.getName() + " &7hat einen &a" + String.format("%.2f", multiplier) + " &7" + boostTypeName + " Booster für &a" + durationMinutes + " Minuten &7gezündet."));
     }
 
     private void handleRewardMenuCommand(Player player, String[] args) {
@@ -419,5 +445,125 @@ public class JobsCommand implements CommandExecutor {
         } else {
             messageManager.sendMessage(player, "&7Du hast noch keine Erfahrung in diesem Job gesammelt.");
         }
+    }
+
+    private void handleQuestsCommand(Player player, String[] args) {
+        if (args.length == 1) {
+            plugin.getQuestMenuListener().openQuestMenu(player);
+        } else if (args.length >= 2 && args[1].equalsIgnoreCase("erstellen")) {
+            handleCreateQuestCommand(player, args);
+        } else if (args.length >= 2 && args[1].equalsIgnoreCase("zurücksetzen")) {
+            handleResetQuestCommand(player, args);
+        } else if (args.length >= 2 && args[1].equalsIgnoreCase("zuruecksetzen")) {
+            // ASCII fallback
+            handleResetQuestCommand(player, args);
+        } else {
+            messageManager.sendMessage(player, "&cNutzung: /jobs quests [erstellen|zurücksetzen]");
+        }
+    }
+
+    private void handleResetQuestCommand(CommandSender sender, String[] args) {
+        if (!(sender.hasPermission("jobs.admin") || sender.hasPermission("jobs.*") || sender.isOp())) {
+            messageManager.sendMessage(sender, "&cDu hast keine Berechtigung für diesen Befehl.");
+            return;
+        }
+        if (args.length < 5) {
+            messageManager.sendMessage(sender, "&cNutzung: /jobs quests zurücksetzen <Spieler> <Jobname> <Slot>");
+            return;
+        }
+        String targetName = args[2];
+        OfflinePlayer target = Bukkit.getOfflinePlayer(targetName);
+        if (target == null || (!target.isOnline() && !target.hasPlayedBefore())) {
+            messageManager.sendMessage(sender, "&cSpieler '" + targetName + "' nicht gefunden.");
+            return;
+        }
+        String jobName = args[3].toLowerCase();
+        Optional<Job> jobOpt = plugin.getJobManager().getJob(jobName);
+        if (jobOpt.isEmpty()) {
+            messageManager.sendMessage(sender, "&cJob '" + jobName + "' nicht gefunden.");
+            return;
+        }
+        int slot;
+        try {
+            slot = Integer.parseInt(args[4]);
+        } catch (NumberFormatException e) {
+            messageManager.sendMessage(sender, "&cUngültiger Slot. Bitte Zahl angeben.");
+            return;
+        }
+        List<Quest> quests = plugin.getQuestManager().getQuestsForJob(jobName);
+        Quest targetQuest = null;
+        for (Quest q : quests) {
+            if (q.getSlot() == slot) { targetQuest = q; break; }
+        }
+        if (targetQuest == null) {
+            messageManager.sendMessage(sender, "&cKeine Quest im Job '" + jobName + "' mit Slot " + slot + " gefunden.");
+            return;
+        }
+        boolean existed = plugin.getQuestManager().resetQuestProgress(target.getUniqueId(), targetQuest.getId());
+        if (existed) {
+            messageManager.sendMessage(sender, "&aQuest zurückgesetzt für &e" + targetName + " &7- Job &c" + jobOpt.get().getDisplayName() + " &7Slot &b" + slot + ".");
+        } else {
+            messageManager.sendMessage(sender, "&aQuest war bereits zurückgesetzt oder ohne Fortschritt für &e" + targetName + "&7. Dennoch gespeichert.");
+        }
+        if (target.isOnline()) {
+            plugin.getMessageManager().sendMessage(target.getPlayer(), "&7Deine Quest im Job &a" + jobOpt.get().getDisplayName() + " &7(Slot &b" + slot + "&7) wurde zurückgesetzt.");
+        }
+    }
+
+    private void handleCreateQuestCommand(Player player, String[] args) {
+        if (!player.hasPermission("jobs.admin")) {
+            messageManager.sendMessage(player, "&cDu hast keine Berechtigung für diesen Befehl.");
+            return;
+        }
+
+        if (args.length < 8) {
+            messageManager.sendMessage(player, "&cNutzung: /jobs quests erstellen <jobname> <item> <task> <specific> <amount> <reward> <rewardAmount> [rewardItem]");
+            return;
+        }
+
+        String jobName = args[2].toLowerCase();
+        String displayItem = args[3];
+        String taskStr = args[4].toUpperCase();
+        String specificTask = args[5];
+        int amount;
+        String rewardStr = args[6].toUpperCase();
+        int rewardAmount;
+        String rewardItem = "";
+
+        try {
+            amount = Integer.parseInt(args[5]);
+            rewardAmount = Integer.parseInt(args[7]);
+        } catch (NumberFormatException e) {
+            messageManager.sendMessage(player, "&cUngültige Zahl für amount oder rewardAmount.");
+            return;
+        }
+
+        if (args.length > 8) {
+            rewardItem = args[8];
+        }
+
+        if (plugin.getJobManager().getJob(jobName).isEmpty()) {
+            messageManager.sendMessage(player, "&cJob '" + jobName + "' nicht gefunden.");
+            return;
+        }
+
+        Quest.QuestTask task;
+        try {
+            task = Quest.QuestTask.valueOf(taskStr);
+        } catch (IllegalArgumentException e) {
+            messageManager.sendMessage(player, "&cUngültige Aufgabe. Nutze BREAK, KILL oder PLACE.");
+            return;
+        }
+
+        Quest.QuestReward reward;
+        try {
+            reward = Quest.QuestReward.valueOf(rewardStr);
+        } catch (IllegalArgumentException e) {
+            messageManager.sendMessage(player, "&cUngültige Belohnung. Nutze JOBXP, MONEY oder ITEM.");
+            return;
+        }
+
+        Quest quest = plugin.getQuestManager().createQuest(jobName, displayItem, task, specificTask, amount, reward, rewardAmount, rewardItem);
+        messageManager.sendMessage(player, "&aQuest erfolgreich erstellt mit ID: &e" + quest.getId());
     }
 }

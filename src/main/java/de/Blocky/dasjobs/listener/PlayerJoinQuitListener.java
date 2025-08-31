@@ -16,16 +16,10 @@ public class PlayerJoinQuitListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        // Hier ist keine Änderung erforderlich.
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        // Korrektur: Die Daten werden gespeichert, aber nicht sofort wieder entfernt.
-        // Die removePlayerData-Methode sollte nur verwendet werden, wenn die Daten wirklich gelöscht werden sollen.
         plugin.getPlayerDataManager().savePlayerData(event.getPlayer().getUniqueId());
-
-        // Die folgende Zeile ist der Fehler und wurde entfernt:
-        // plugin.getPlayerDataManager().removePlayerData(event.getPlayer().getUniqueId());
     }
 }

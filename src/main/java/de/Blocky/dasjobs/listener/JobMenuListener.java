@@ -155,12 +155,9 @@ public class JobMenuListener implements Listener {
             lore.add(ChatUtil.colorize("&cJob-Beschreibung nicht verfügbar."));
             lore.add(ChatUtil.colorize("&cBitte kontaktiere einen Administrator."));
         }
-
-        // KORRIGIERT: Konvertiere den String-Wert in ein Material-Objekt
         String materialName = (job != null) ? job.getMenuIconMaterial() : "BARRIER";
         Material material = Material.getMaterial(materialName);
 
-        // Füge einen Fallback hinzu, falls das Material ungültig ist
         if (material == null) {
             plugin.getLogger().warning("Ungültiges Material '" + materialName + "' für Job '" + jobCanonicalName + "'. Verwende BARRIER als Standard.");
             material = Material.BARRIER;

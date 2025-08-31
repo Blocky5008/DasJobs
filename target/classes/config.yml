@@ -31,6 +31,10 @@ infinity-axe-max-blocks: 12
 # infinity-pickaxe-max-blocks: Die maximale Anzahl an Blöcken, für die ein Spieler Belohnungen
 # erhält, wenn er mit einer Infinity-Spitzhacke (Bohrer) abbaut.
 infinity-pickaxe-max-blocks: 4
+
+# infinity-shovel-max-blocks: Die maximale Anzahl an Blöcken, für die ein Spieler Belohnungen
+# erhält, wenn er mit einer Infinity-Schaufel (Gräber) abbaut.
+infinity-shovel-max-blocks: 2
 jobs:
   # --------------------------------------------------------------------------------
   # Miner-Job-Konfiguration
@@ -158,6 +162,19 @@ jobs:
           income: 1.0
           experience: 1000.0
 
+    # Quest-Konfiguration für Miner
+    quests:
+      quest_miner_1:
+        slot: 1  # Welcher slot die Quest im Quest Menü haben soll (am Besten in der Reihe)
+        lore: "&eSammle &c50 &eKohle" # Questnachricht, die bei der Quest stehen soll (Colorcodes sind möglich)
+        display-item: "COAL_ORE" # Das icon, was im Quest Menu angezeigt wird (Mit Großbuchstaben)
+        task: "BREAK" # Was gemacht werden soll BREAK,PLACE,KILL
+        specific-task: "COAL_ORE" #Was für ein Block/Item abgebaut/getötet werden soll
+        amount: 50 # Wie viele Blöcke/Entities abgebaut/getötet werden sollen
+        reward: "ITEM" # Was soll die Belohnung für die Quest sein? JOBXP,MONEY,ITEM
+        reward-amount: 64 # Wie viel von der Belohnung soll der Spieler bekommen
+        reward-item: "Diamond" # Wenn Item als reward ausgewählt wurde, muss hier das Item bestimmt werden
+
   # --------------------------------------------------------------------------------
   # Holzfäller-Job-Konfiguration
   # Dieser Job konzentriert sich auf das Zerstören verschiedener Arten von Holzblöcken.
@@ -238,6 +255,27 @@ jobs:
         mangrove_log:
           income: 1.0
           experience: 5.0
+
+    # Quest-Konfiguration für Holzfäller
+    quests:
+      quest_holzfaeller_1:
+        slot: 1
+        lore: "&2Fälle &c100 &2Eichenstämme"
+        display-item: "OAK_LOG"
+        task: "BREAK"
+        specific-task: "OAK_LOG"
+        amount: 100
+        reward: "JOBXP"
+        reward-amount: 150
+      quest_holzfaeller_2:
+        slot: 2
+        lore: "&2Fälle &c50 &2Fichtenstämme"
+        display-item: "SPRUCE_LOG"
+        task: "BREAK"
+        specific-task: "SPRUCE_LOG"
+        amount: 50
+        reward: "MONEY"
+        reward-amount: 300
 
   # --------------------------------------------------------------------------------
   # Jäger-Job-Konfiguration
@@ -347,6 +385,27 @@ jobs:
           income: 30.0
           experience: 15.0
 
+    # Quest-Konfiguration für Jäger
+    quests:
+      quest_jaeger_1:
+        slot: 1
+        lore: "&4Töte &c20 &4Zombies"
+        display-item: "ZOMBIE_HEAD"
+        task: "KILL"
+        specific-task: "ZOMBIE"
+        amount: 20
+        reward: "JOBXP"
+        reward-amount: 200
+      quest_jaeger_2:
+        slot: 2
+        lore: "&4Töte &c15 &4Skelette"
+        display-item: "SKELETON_HEAD"
+        task: "KILL"
+        specific-task: "SKELETON"
+        amount: 15
+        reward: "MONEY"
+        reward-amount: 400
+
   # --------------------------------------------------------------------------------
   # Gräber-Job-Konfiguration
   # Dieser Job konzentriert sich auf das Zerstören verschiedener Arten von Erde-, Sand- und anderen Bodenblöcken.
@@ -391,6 +450,27 @@ jobs:
         snow_block:
           income: 1.0
           experience: 0.5
+
+    # Quest-Konfiguration für Gräber
+    quests:
+      quest_graeber_1:
+        slot: 1
+        lore: "&6Grabe &c200 &6Erde"
+        display-item: "DIRT"
+        task: "BREAK"
+        specific-task: "DIRT"
+        amount: 200
+        reward: "JOBXP"
+        reward-amount: 100
+      quest_graeber_2:
+        slot: 2
+        lore: "&6Grabe &c100 &6Sand"
+        display-item: "SAND"
+        task: "BREAK"
+        specific-task: "SAND"
+        amount: 100
+        reward: "MONEY"
+        reward-amount: 250
 
   # --------------------------------------------------------------------------------
   # Farmer-Job-Konfiguration
@@ -490,3 +570,24 @@ jobs:
         hay_block:
           income: 1.0
           experience: 1.0
+
+    # Quest-Konfiguration für Farmer
+    quests:
+      quest_farmer_1:
+        slot: 1
+        lore: "&aErnte &c50 &aWeizen"
+        display-item: "WHEAT"
+        task: "BREAK"
+        specific-task: "WHEAT-7"
+        amount: 50
+        reward: "JOBXP"
+        reward-amount: 120
+      quest_farmer_2:
+        slot: 2
+        lore: "&aErnte &c30 &aKarotten"
+        display-item: "CARROT"
+        task: "BREAK"
+        specific-task: "CARROT-7"
+        amount: 30
+        reward: "MONEY"
+        reward-amount: 350

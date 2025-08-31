@@ -5,6 +5,7 @@ import de.Blocky.dasjobs.data.Booster;
 import de.Blocky.dasjobs.data.JobAction;
 import de.Blocky.dasjobs.data.JobReward;
 import de.Blocky.dasjobs.data.PlayerJobData;
+import de.Blocky.dasjobs.data.Quest;
 import de.Blocky.dasjobs.manager.MessageManager;
 import de.Blocky.dasjobs.util.ChatUtil;
 import org.bukkit.entity.LivingEntity;
@@ -86,5 +87,7 @@ public class EntityKillListener implements Listener {
                         killer.sendActionBar(actionBarMessage);
                     }
                 });
+
+        plugin.getQuestManager().checkQuestProgress(killer, Quest.QuestTask.KILL, entityTypeKey);
     }
 }

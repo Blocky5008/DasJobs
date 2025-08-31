@@ -114,17 +114,6 @@ public class PlayerDataManager {
         Bukkit.getLogger().info("[DasJobs] Alle Spielerdaten gespeichert.");
     }
 
-    public void removePlayerData(UUID uuid) {
-        playerJobDataMap.remove(uuid);
-        if (playerDataConfig.isConfigurationSection(uuid.toString())) {
-            playerDataConfig.set(uuid.toString(), null);
-            try {
-                playerDataConfig.save(playerdataFile);
-            } catch (IOException e) {
-                Bukkit.getLogger().log(Level.SEVERE, "[DasJobs] Konnte Spielerdaten für " + uuid.toString() + " aus der Datei löschen: " + e.getMessage());
-            }
-        }
-    }
 
     public void resetClaimedRewards(UUID playerUUID, String jobName) {
         PlayerJobData playerData = getPlayerData(playerUUID);

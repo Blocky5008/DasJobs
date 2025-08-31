@@ -5,6 +5,7 @@ import de.Blocky.dasjobs.data.Booster;
 import de.Blocky.dasjobs.data.JobAction;
 import de.Blocky.dasjobs.data.JobReward;
 import de.Blocky.dasjobs.data.PlayerJobData;
+import de.Blocky.dasjobs.data.Quest;
 import de.Blocky.dasjobs.manager.MessageManager;
 import de.Blocky.dasjobs.util.ChatUtil;
 import org.bukkit.GameMode;
@@ -15,6 +16,7 @@ import org.bukkit.block.data.type.Cocoa;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
@@ -31,6 +33,7 @@ public class BlockBreakListener implements Listener {
     private final MessageManager messageManager;
     private final Map<UUID, Integer> infinityAxeBreakCounter = new ConcurrentHashMap<>();
     private final Map<UUID, Integer> infinityPickaxeBreakCounter = new ConcurrentHashMap<>();
+    private final Map<UUID, Integer> infinityShovelBreakCounter = new ConcurrentHashMap<>();
     private BukkitRunnable counterResetTask;
 
     public BlockBreakListener(DasJobs plugin) {
@@ -48,6 +51,7 @@ public class BlockBreakListener implements Listener {
             public void run() {
                 infinityAxeBreakCounter.clear();
                 infinityPickaxeBreakCounter.clear();
+                infinityShovelBreakCounter.clear();
             }
         };
         counterResetTask.runTaskTimer(plugin, 0L, 1L);
@@ -60,8 +64,7 @@ public class BlockBreakListener implements Listener {
         }
     }
 
-
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockBreak(BlockBreakEvent event) {
         if (event.isCancelled()) {
             return;
@@ -80,6 +83,7 @@ public class BlockBreakListener implements Listener {
         }
 
         ItemStack itemInHand = player.getInventory().getItemInMainHand();
+
         if (isInfinityAxe(itemInHand)) {
             int currentBreaks = infinityAxeBreakCounter.getOrDefault(player.getUniqueId(), 0);
             int maxAxeBreaks = plugin.getConfig().getInt("infinity-axe-max-blocks", 12);
@@ -98,6 +102,15 @@ public class BlockBreakListener implements Listener {
             infinityPickaxeBreakCounter.put(player.getUniqueId(), currentBreaks + 1);
         }
 
+        if (isInfinityShovel(itemInHand)) {
+            int currentBreaks = infinityShovelBreakCounter.getOrDefault(player.getUniqueId(), 0);
+            int maxShovelBreaks = plugin.getConfig().getInt("infinity-shovel-max-blocks", 2);
+            if (currentBreaks >= maxShovelBreaks) {
+                return;
+            }
+            infinityShovelBreakCounter.put(player.getUniqueId(), currentBreaks + 1);
+        }
+
         if (!block.isPreferredTool(itemInHand)) {
             return;
         }
@@ -111,10 +124,10 @@ public class BlockBreakListener implements Listener {
                 return;
             }
         }
+
         final String worldName = block.getWorld().getName();
         final Material material = block.getType();
         final String effectiveBlockKey = material.name().toUpperCase();
-
 
         plugin.getJobManager().getJobs().values().stream()
                 .filter(job -> job.getRewards().containsKey(JobAction.BREAK))
@@ -163,7 +176,10 @@ public class BlockBreakListener implements Listener {
                         player.sendActionBar(actionBarMessage);
                     }
                 });
+
+        plugin.getQuestManager().checkQuestProgress(player, Quest.QuestTask.BREAK, effectiveBlockKey);
     }
+
     private boolean isInfinityAxe(ItemStack item) {
         if (item == null || item.getType().isAir()) {
             return false;
@@ -171,11 +187,20 @@ public class BlockBreakListener implements Listener {
         String materialName = item.getType().name();
         return materialName.contains("_AXE") && item.containsEnchantment(Enchantment.INFINITY);
     }
+
     private boolean isInfinityPickaxe(ItemStack item) {
         if (item == null || item.getType().isAir()) {
             return false;
         }
         String materialName = item.getType().name();
         return materialName.contains("_PICKAXE") && item.containsEnchantment(Enchantment.INFINITY);
+    }
+
+    private boolean isInfinityShovel(ItemStack item) {
+        if (item == null || item.getType().isAir()) {
+            return false;
+        }
+        String materialName = item.getType().name();
+        return materialName.contains("_SHOVEL") && item.containsEnchantment(Enchantment.INFINITY);
     }
 }
